@@ -1,5 +1,5 @@
 - name: play to setup web server
-  hosts: localhost
+  hosts: all
   tasks:
   - name: latest httpd version installed
     yum:
