@@ -1,0 +1,45 @@
+---
+- name: Enable intranet services
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install latest version of httpd and firewalld
+      yum:
+        name:
+          - httpd
+          - firewalld
+        state: latest
+
+    - name: Create test html page for Testing
+      copy:
+        content: "Welcome to the acloudready.com!\n"
+        dest: /var/www/html/index.html
+
+    - name: firewalld enabled and running
+      service:
+        name: firewalld
+        enabled: true
+        state: started
+
+    - name: firewalld permits http service
+      firewalld:
+        service: http
+        permanent: true
+        state: enabled
+        immediate: yes
+
+    - name: Enable and Start httpd
+      service:
+        name: httpd
+        enabled: true
+        state: started
+
+- name: test webserver 
+  hosts: localhost
+  become: no
+  tasks:
+    - name: connect to intranet web server
+      uri:
+        url: http://servera.demomustang.com
+        return_content: yes
+        status_code: 200
